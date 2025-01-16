@@ -3,10 +3,8 @@
   "builds": [
     {
       "src": "index.js",
-      "use": "@vercel/node",
-      "env": {
-      "PLAYWRIGHT_BROWSERS_PATH": "0"
-    }
+      "use": "@vercel/node"
+      
     }
   ],
   "routes": [
