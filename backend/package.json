@@ -5,7 +5,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build":"npm build && npx playwright install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
