@@ -4,25 +4,23 @@ A web application that scrapes product reviews from various e-commerce websites 
 
 ```mermaid
 graph TD;
-    A[User] -->|Interacts with| B[Frontend]
-    B -->|Fetches data from| C[Backend]
-    C -->|Scrapes reviews| D[Playwright]
-    C -->|Handles requests| E[Express]
-    E -->|Serves data| B
-    B -->|Displays reviews| A
-    subgraph Frontend
-        B1[React]
-        B2[Tailwind CSS]
-        B3[Vite]
-        B
-    end
-    subgraph Backend
-        C1[Node.js]
-        C2[Express]
-        C3[Playwright]
-        C4[CORS]
-        C
-    end
+    A[Start Server (8000)] --> B[User Requests /api/reviews]
+    B --> C[URL Parameter Check]
+    C -->|If missing| D[Return 400 Error<br>(URL required)]
+    C -->|If present| E[Launch Chromium<br>(Headless Mode)]
+    E --> F[Navigate to URL<br>Wait for Body Load]
+    F --> G[Check and Close Popup<br>(if exists)]
+    G --> H[Review Selectors Cached?]
+    H -->|Yes| I[Use Cached Selectors]
+    H -->|No| J[Process HTML in Chunks<br>(Chunk HTML, Filter)]
+    J --> K[Extract Selectors (API Call)]
+    K --> L[Extract Reviews from HTML<br>(Using Extracted Selectors)]
+    L --> M[Collect Enough Reviews?]
+    M -->|Yes| N[Send Reviews<br>(JSON Response)]
+    M -->|No| O[Next Page Button<br>(Click, Wait)]
+    N --> P[End Process]
+    O --> L
+    D --> P
 ```
 
 ## Features
