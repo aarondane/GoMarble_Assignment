@@ -14,7 +14,7 @@ function App() {
     
     try {
       // Convert numReviews to a number before passing to the API
-      const response = await fetch(`https://backend-two-xi-33.vercel.app/api/reviews?url=${encodeURIComponent(url)}&numReviews=${Number(numReviews)}`);
+      const response = await fetch(`https://gomarble-backend.onrender.com/api/reviews?url=${encodeURIComponent(url)}&numReviews=${Number(numReviews)}`);
       const data = await response.json();
       
       if (!response.ok) {
