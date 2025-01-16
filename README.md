@@ -51,9 +51,9 @@ graph TD;
 ## Tech Stack
 
 - **Frontend:**
-  - React  building the user interface
-  - Tailwind CSS for styling
-  - Vite for development server and build tool
+  - React : building the user interface
+  - Tailwind CSS :styling
+  - Vite : development server and build tool
 
 - **Backend:**
     - Node.js and Express.js for the backend server
