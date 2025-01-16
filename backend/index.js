@@ -131,7 +131,7 @@ app.get('/api/reviews', async (req, res) => {
   }
 
   try {
-    const browser = await playwright.chromium.launch();
+    const browser = await playwright.chromium.launch({ headless: true });
     const page = await browser.newPage();
 
     let allReviews = [];
