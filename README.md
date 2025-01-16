@@ -27,16 +27,20 @@ graph TD;
 ## Screenshots
 
 ### Frontend with URL and Review Number
+This screenshot shows the frontend interface where users can input a product URL and specify the number of reviews they want to fetch.
 
 ![Frontend with URL and Review Number](images/img1.png)
 
 ### Frontend with the Output
+This screenshot demonstrates the frontend displaying the fetched reviews, including the reviewer's name, rating, review content, and review date.
 
 ![Frontend with the Output](images/img2.png)
 
 ### Backend Fetching Selectors
+This screenshot shows the backend process where Gemini LLM is used to identify the appropriate CSS selectors for extracting review data from the product page.
 
 ![Backend Fetching Selectors](images/img3.png)
+
 ## Features
 
 - Scrapes product reviews from any website
@@ -51,9 +55,9 @@ graph TD;
 ## Tech Stack
 
 - **Frontend:**
-  - React : building the user interface
-  - Tailwind CSS :styling
-  - Vite : development server and build tool
+  - React for building the user interface
+  - Tailwind CSS for styling
+  - Vite for development server and build tool
 
 - **Backend:**
     - Node.js and Express.js for the backend server
