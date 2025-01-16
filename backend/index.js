@@ -11,11 +11,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
 const app = express();
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-  })
-);
+app.use(cors());
 
 // Helper function to chunk HTML
 function chunkHtml(html, chunkSize = 20000) {
