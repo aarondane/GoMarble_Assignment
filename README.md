@@ -2,22 +2,24 @@
 
 A web application that scrapes product reviews from various e-commerce websites using Playwright and displays them in a clean, organized interface.
 
+## Project Flowchart
+
 ```mermaid
-graph TD;
+graph TD
     A[Start Server (8000)] --> B[User Requests /api/reviews]
     B --> C[URL Parameter Check]
-    C -->|If missing| D[Return 400 Error<br>(URL required)]
-    C -->|If present| E[Launch Chromium<br>(Headless Mode)]
-    E --> F[Navigate to URL<br>Wait for Body Load]
-    F --> G[Check and Close Popup<br>(if exists)]
+    C -->|If missing| D[Return 400 Error (URL required)]
+    C -->|If present| E[Launch Chromium (Headless Mode)]
+    E --> F[Navigate to URL and Wait for Body Load]
+    F --> G[Check and Close Popup (if exists)]
     G --> H[Review Selectors Cached?]
     H -->|Yes| I[Use Cached Selectors]
-    H -->|No| J[Process HTML in Chunks<br>(Chunk HTML, Filter)]
+    H -->|No| J[Process HTML in Chunks (Chunk HTML, Filter)]
     J --> K[Extract Selectors (API Call)]
-    K --> L[Extract Reviews from HTML<br>(Using Extracted Selectors)]
+    K --> L[Extract Reviews from HTML (Using Extracted Selectors)]
     L --> M[Collect Enough Reviews?]
-    M -->|Yes| N[Send Reviews<br>(JSON Response)]
-    M -->|No| O[Next Page Button<br>(Click, Wait)]
+    M -->|Yes| N[Send Reviews (JSON Response)]
+    M -->|No| O[Next Page Button (Click, Wait)]
     N --> P[End Process]
     O --> L
     D --> P
