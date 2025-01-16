@@ -2,6 +2,29 @@
 
 A web application that scrapes product reviews from various e-commerce websites using Playwright and displays them in a clean, organized interface.
 
+```mermaid
+graph TD;
+    A[User] -->|Interacts with| B[Frontend]
+    B -->|Fetches data from| C[Backend]
+    C -->|Scrapes reviews| D[Playwright]
+    C -->|Handles requests| E[Express]
+    E -->|Serves data| B
+    B -->|Displays reviews| A
+    subgraph Frontend
+        B1[React]
+        B2[Tailwind CSS]
+        B3[Vite]
+        B
+    end
+    subgraph Backend
+        C1[Node.js]
+        C2[Express]
+        C3[Playwright]
+        C4[CORS]
+        C
+    end
+```
+
 ## Features
 
 - Scrapes product reviews from any website
