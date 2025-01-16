@@ -39,9 +39,9 @@ npm install
 
 ## Running the Application
 
-1. Start the backend server:
+1. Go into the backend folder, start the backend server :
 ```bash
-npm start
+node index.js
 ```
 
 2. In a separate terminal, start the frontend development server:
@@ -57,7 +57,7 @@ The application will be available at:
 
 1. Open the application in your browser
 2. Enter a product URL in the input field
-3. (Optional) Set the maximum number of reviews to fetch
+3. Set the maximum number of reviews to fetch
 4. Click "Get Reviews" to fetch and display the reviews
 5. Reviews will be displayed with:
    - Reviewer name
