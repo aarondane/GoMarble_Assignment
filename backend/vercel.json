@@ -1,16 +1,25 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "index.js",
-      "use": "@vercel/node"
-      
+    "version": 2,
+    "builds": [
+      {
+        "src": "index.js",
+        "use": "@vercel/node",
+        "config": {
+          "includeFiles": "**/*"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "index.js"
+      }
+    ],
+    "functions": {
+      "runtime": "nodejs18.x",
+      "environment": {
+        "PLAYWRIGHT_BROWSERS_PATH": "0"
+      }
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "index.js"
-    }
-  ]
-}
+  }
+  
