@@ -156,4 +156,4 @@ The application handles various error cases:
 
 ## License
 
-MIT License - feel free to use this project for any purpose.
+Feel free to use this project for any purpose.
