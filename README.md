@@ -5,7 +5,7 @@ A web application that scrapes product reviews from various e-commerce websites 
 ## Project Flowchart
 
 ```mermaid
-graph TD;
+graph TD
     A[Start Server (8000)] --> B[User Requests /api/reviews]
     B --> C[URL Parameter Check]
     C -->|If missing| D[Return 400 Error (URL required)]
