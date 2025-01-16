@@ -6,20 +6,20 @@ A web application that scrapes product reviews from various e-commerce websites 
 
 ```mermaid
 graph TD;
-    A[Start Server] --> B[User Requests /api/reviews]
+    A[Start Server 8000] --> B[User Requests /api/reviews]
     B --> C[URL Parameter Check]
-    C -->|If missing| D[Return 400 Error {URL required}]
-    C -->|If present| E[Launch Chromium (Headless Mode)]
+    C -->|If missing| D[Return 400 Error URL required]
+    C -->|If present| E[Launch Chromium Headless Mode]
     E --> F[Navigate to URL and Wait for Body Load]
-    F --> G[Check and Close Popup (if exists)]
+    F --> G[Check and Close Popup if exists]
     G --> H[Review Selectors Cached?]
     H -->|Yes| I[Use Cached Selectors]
-    H -->|No| J[Process HTML in Chunks (Chunk HTML, Filter)]
-    J --> K[Extract Selectors (API Call)]
-    K --> L[Extract Reviews from HTML (Using Extracted Selectors)]
+    H -->|No| J[Process HTML in Chunk]
+    J --> K[Extract Selectors using Gemini api]
+    K --> L[Extract Reviews from HTML]
     L --> M[Collect Enough Reviews?]
-    M -->|Yes| N[Send Reviews (JSON Response)]
-    M -->|No| O[Next Page Button (Click, Wait)]
+    M -->|Yes| N[Send Reviews]
+    M -->|No| O[Next Page Button, Click, Wait]
     N --> P[End Process]
     O --> L
     D --> P
