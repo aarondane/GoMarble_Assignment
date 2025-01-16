@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "npx playwright install && apt-get install libnss3 libnspr4 libgbm1"
+    "postinstall": "npx playwright install-deps && apt-get install libnss3 libnspr4 libgbm1"
   },
   "author": "",
   "license": "ISC",
