@@ -24,7 +24,19 @@ graph TD;
     O --> L
     D --> P
 ```
+## Screenshots
 
+### Frontend with URL and Review Number
+
+![Frontend with URL and Review Number](images/img1.png)
+
+### Frontend with the Output
+
+![Frontend with the Output](images/img2.png)
+
+### Backend Fetching Selectors
+
+![Backend Fetching Selectors](images/img3.png)
 ## Features
 
 - Scrapes product reviews from any website
