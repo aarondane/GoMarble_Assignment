@@ -42,6 +42,8 @@ graph TD;
 - Scrapes product reviews from any website
 - Clean and responsive UI built with React and Tailwind CSS
 - Real-time review fetching and display
+- Use Gemini LLM to automatically identify the appropriate CSS selectors for reviews on a product page, even when the selectors are dynamically generated.
+- Implement functionality to navigate through all pages of reviews, ensuring complete and thorough data extraction.
 - Configurable maximum review limit
 - Star rating visualization
 - Error handling and loading states
