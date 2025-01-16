@@ -8,7 +8,7 @@ A web application that scrapes product reviews from various e-commerce websites 
 graph TD;
     A[Start Server] --> B[User Requests /api/reviews]
     B --> C[URL Parameter Check]
-    C -->|If missing| D[Return 400 Error (URL required)]
+    C -->|If missing| D[Return 400 Error {URL required}]
     C -->|If present| E[Launch Chromium (Headless Mode)]
     E --> F[Navigate to URL and Wait for Body Load]
     F --> G[Check and Close Popup (if exists)]
