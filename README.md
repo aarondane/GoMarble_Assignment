@@ -85,12 +85,14 @@ npm install
 
 ## Running the Application
 
-1. Go into the backend folder, start the backend server :
+1. Create a `.env` file in the backend folder and store the `GOOGLE_API_KEY` there.
+
+2. Go into the backend folder, start the backend server :
 ```bash
 node index.js
 ```
 
-2. In a separate terminal, start the frontend development server:
+3. In a separate terminal, start the frontend development server:
 ```bash
 npm run dev
 ```
