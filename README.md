@@ -1,6 +1,6 @@
 # Review Scraper
 
-A web application that scrapes product reviews from various e-commerce websites using Playwright and displays them in a clean, organized interface.
+A web application that scrapes product reviews from various e-commerce websites using Playwright and Gemini , then displays them in a clean, organized interface.
 
 ## Project Flowchart
 
