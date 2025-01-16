@@ -51,15 +51,20 @@ graph TD;
 ## Tech Stack
 
 - **Frontend:**
-  - React
-  - Tailwind CSS
-  - Vite
+  - React for building the user interface
+  - Tailwind CSS for styling
+  - Vite for development server and build tool
 
 - **Backend:**
-  - Node.js
-  - Express
-  - Playwright
-  - CORS
+    - Node.js and Express.js for the backend server
+  - Playwright for browser automation and web scraping
+  - Gemini LLM for identifying CSS selectors dynamically
+  - CORS for handling cross-origin requests
+  - dotenv for managing environment variables
+
+
+
+
 
 ## Prerequisites
 
