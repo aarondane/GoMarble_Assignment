@@ -26,7 +26,10 @@ graph TD;
 ```
 ## Demo
 
-[![Watch the video](images/Execution.mp4/0.jpg)](images/Execution.mp4)
+<video width="600" controls>
+  <source src="images/Execution.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Features
 
