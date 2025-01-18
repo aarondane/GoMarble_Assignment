@@ -24,22 +24,13 @@ graph TD;
     O --> L
     D --> P
 ```
-## Screenshots
+## Demo
 
-### Frontend with URL and Review Number
-This screenshot shows the frontend interface where users can input a product URL and specify the number of reviews they want to fetch.
+<video controls>
+  <source src="images/Execution.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
-![Frontend with URL and Review Number](images/img1.png)
-
-### Frontend with the Output
-This screenshot demonstrates the frontend displaying the fetched reviews, including the reviewer's name, rating, review content, and review date.
-
-![Frontend with the Output](images/img2.png)
-
-### Backend Fetching Selectors
-This screenshot shows the backend process where Gemini LLM is used to identify the appropriate CSS selectors for extracting review data from the product page.
-
-![Backend Fetching Selectors](images/img3.png)
 
 ## Features
 
