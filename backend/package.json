@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "apt-get update && apt-get install -y libgstreamer-gl1.0-0 libgstreamer-plugins-bad1.0-0 libavif15 libenchant-2-2 libsecret-1-0 libmanette-0.2-0 libgles2-mesa && npx playwright install"
+    "postinstall": "sudo apt-get update && sudo apt-get install -y libgstreamer-gl1.0-0 libgstreamer-plugins-bad1.0-0 libavif15 libenchant-2-2 libsecret-1-0 libmanette-0.2-0 libgles2-mesa && npx playwright install"
   },
   "author": "",
   "license": "ISC",
