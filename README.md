@@ -63,7 +63,7 @@ https://github.com/user-attachments/assets/9b540144-f515-4be2-ae03-ce9cbcdc6118
 - npm or yarn
 - Playwright
  ```bash
-  npx playwright install
+  npx playwright install chromium
   ```
 
 ## Installation
