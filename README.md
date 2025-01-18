@@ -139,6 +139,15 @@ Fetches reviews from a specified URL.
 }
 ```
 
+## Test Pages
+
+To test the implementation, here are some example product pages:
+
+- [2717 Recovery Cream](https://2717recovery.com/products/recovery-cream)
+- [Bhumi Sateen Sheet Set - Orion Blue](https://bhumi.com.au/products/sateen-sheet-set-orion-blue?variant=46405869076637)
+- [Bhumi Blissful Ritual Twill Bath Sheet Bundle](https://bhumi.com.au/products/organic-cotton-blissful-ritual-twill-bath-sheet-bundle)
+
+
 ## Error Handling
 
 The application handles various error cases:
