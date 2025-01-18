@@ -75,7 +75,7 @@ This screenshot shows the backend process where Gemini LLM is used to identify t
 - Node.js 14.x or higher
 - npm or yarn
 - Playwright
-- ```bash
+ ```bash
   npx playwright install
   ```
 
