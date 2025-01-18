@@ -26,10 +26,7 @@ graph TD;
 ```
 ## Demo
 
-<video width="600" controls>
-  <source src="images/Execution.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/9b540144-f515-4be2-ae03-ce9cbcdc6118
 
 ## Features
 
