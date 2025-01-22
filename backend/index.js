@@ -56,11 +56,10 @@ async function extractSelectors(reviewChunks) {
     console.log(`Processing chunk ${i + 1} of ${reviewChunks.length}`);
     const prompt = `
       Analyze this HTML chunk and identify CSS selectors for review elements. 
-      Ensure that all the reviews are identified using consistent CSS selectors. 
       Return the CSS selectors only when you find multiple reviews with the same CSS selecors and you're sure of it.
       Focus on the following:
       - container: The outer container of the review element.
-      - name: The selector for the reviewer name (inner-most if applicable).
+      - name: The selector for the reviewer name.
       - rating: The selector for the rating element (do not select inner-most if not necessary).
       - review: The selector for the review text.
       - date: The selector for the review date (inner-most).
@@ -131,7 +130,10 @@ app.get('/api/reviews', async (req, res) => {
   }
 
   try {
-    const browser = await playwright.chromium.launch({ headless: true });
+    const browser = await playwright.chromium.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true
+    });
     const page = await browser.newPage();
 
     let allReviews = [];
