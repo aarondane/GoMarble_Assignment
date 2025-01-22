@@ -149,7 +149,7 @@ app.get('/api/reviews', async (req, res) => {
     if (popupCloseButton) {
       console.log('Popup found, closing it...');
       await popupCloseButton.click();
-      await delay(4000); // Wait for the popup to close
+    
     } else {
       console.log('No popup found.');
     }
@@ -219,8 +219,7 @@ app.get('/api/reviews', async (req, res) => {
       if (nextPageButton) {
         console.log('Loading next page...');
         await nextPageButton.click();
-        // Add delay for loading
-        await delay(4000);
+        
       } else {
         console.log('No next page found, stopping.');
         break;
@@ -247,6 +246,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT, () => {
   console.log('Server running on port 8000');
 });
