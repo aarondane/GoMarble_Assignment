@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "sudo apt-get install chromium-chromedriver"
+    "postinstall": "apt-get install chromium-chromedriver"
   },
   "author": "",
   "license": "ISC",
