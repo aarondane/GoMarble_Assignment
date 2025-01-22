@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import puppeteer from 'puppeteer';
+import playwright from 'playwright';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
@@ -34,6 +34,7 @@ function logReviewDetails(reviews) {
     console.log(`Review #${index + 1}`);
     console.log('Reviewer:', review.reviewer);
     console.log('Rating:', '⭐'.repeat(Math.min(review.rating, 5)));
+    
     console.log('Date:', review.date);
     console.log('Review:', review.body);
     console.log('-------------------\n');
@@ -121,17 +122,16 @@ async function extractSelectors(reviewChunks) {
 }
 
 app.get('/api/reviews', async (req, res) => {
-  const { url, numReviews = 5 } = req.query;
-  console.log(numReviews); // Default to 5 reviews if numReviews is not provided
+  const { url, numReviews=5} = req.query;
+  console.log(numReviews) // Default to 5 reviews if numReviews is not provided
 
   if (!url) {
     return res.status(400).json({ error: 'URL parameter is required' });
   }
 
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    const browser = await playwright.chromium.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
 
@@ -149,7 +149,7 @@ app.get('/api/reviews', async (req, res) => {
     if (popupCloseButton) {
       console.log('Popup found, closing it...');
       await popupCloseButton.click();
-      await delay(4000); // Wait for the popup to close
+      await page.waitForTimeout(1000); // Wait for the popup to close
     } else {
       console.log('No popup found.');
     }
@@ -219,8 +219,7 @@ app.get('/api/reviews', async (req, res) => {
       if (nextPageButton) {
         console.log('Loading next page...');
         await nextPageButton.click();
-        // Add delay for loading
-        await delay(4000);
+        await page.waitForTimeout(3000); // Add delay for loading
       } else {
         console.log('No next page found, stopping.');
         break;
@@ -242,10 +241,9 @@ app.get('/api/reviews', async (req, res) => {
     return res.status(500).json({ error: 'An error occurred while processing reviews.' });
   }
 });
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.get("/",(req,res)=>{
+  res.send("hello Worls !");
+})
 
 app.listen(8000, () => {
   console.log('Server running on port 8000');

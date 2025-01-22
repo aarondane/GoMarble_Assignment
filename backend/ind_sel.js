@@ -1,14 +1,15 @@
 import express from 'express';
 import cors from 'cors';
-import puppeteer from 'puppeteer';
+import { Builder, By, until } from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize Google Gemini Generative AI
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+
 
 const app = express();
 app.use(cors());
@@ -40,6 +41,7 @@ function logReviewDetails(reviews) {
   });
   console.log(`Total Reviews: ${reviews.length}\n`);
 }
+
 
 // Process HTML chunks to extract selectors
 async function extractSelectors(reviewChunks) {
@@ -120,62 +122,61 @@ async function extractSelectors(reviewChunks) {
   return selectors;
 }
 
+
 app.get('/api/reviews', async (req, res) => {
   const { url, numReviews = 5 } = req.query;
-  console.log(numReviews); // Default to 5 reviews if numReviews is not provided
 
   if (!url) {
     return res.status(400).json({ error: 'URL parameter is required' });
   }
 
+  const options = new chrome.Options();
+  options.addArguments('--headless', '--disable-gpu', '--no-sandbox','--disable-dev-shm-usage','--disable-logging', '--mute-audio');
+
+  const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
+
+  let allReviews = [];
+  let selectors = null;
+
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-    const page = await browser.newPage();
-
-    let allReviews = [];
-    let selectors = null; // Cache selectors after first extraction
-
     console.log(`Scraping reviews from ${url}, aiming for ${numReviews} reviews.`);
 
-    await page.goto(url);
-    await page.waitForSelector('body');
+    await driver.get(url);
+    await driver.wait(until.elementLocated(By.css('body')), 10000);
 
-    // Check if the popup exists and close it
+    // Close popup if present
     const closePopupSelector = '.store-selection-popup--close';
-    const popupCloseButton = await page.$(closePopupSelector);
-    if (popupCloseButton) {
+    const popupCloseButton = await driver.findElements(By.css(closePopupSelector));
+    if (popupCloseButton.length > 0) {
       console.log('Popup found, closing it...');
-      await popupCloseButton.click();
-      await delay(4000); // Wait for the popup to close
+      await popupCloseButton[0].click();
+      await driver.sleep(1000);
     } else {
       console.log('No popup found.');
     }
 
     while (allReviews.length < numReviews) {
-      const fullHtml = await page.content();
+      const fullHtml = await driver.executeScript('return document.documentElement.outerHTML');
 
       // Extract selectors if not already done
       if (!selectors) {
         const htmlChunks = chunkHtml(fullHtml);
-        const reviewChunks = filterChunksWithReviews(htmlChunks);
+        const reviewChunks = filterChunksWithReviews(htmlChunks);        
         reviewChunks.reverse(); // Process chunks from the end
-        selectors = await extractSelectors(reviewChunks);
+        selectors = await extractSelectors(reviewChunks); // Assume this is unchanged
 
-        if (Object.keys(selectors).length === 0) {
-          await browser.close();
+        if (!selectors.container) {
+          await driver.quit();
           return res.status(404).json({ error: 'Review selectors not found.' });
         }
-
         console.log('Extracted selectors:', selectors);
-      } else {
+        } 
+        else {
         console.log('Reusing cached selectors:', selectors);
       }
 
-      // Extract reviews from the current page
-      const reviews = await page.evaluate((selectors) => {
+      // Extract reviews using selectors
+      const reviews = await driver.executeScript((selectors) => {
         const reviewElements = document.querySelectorAll(selectors.container);
         return Array.from(reviewElements).map((review) => {
           const nameElement = review.querySelector(selectors.name);
@@ -191,7 +192,8 @@ app.get('/api/reviews', async (req, res) => {
               if (match) {
                 rating = parseInt(match[1], 10);
               }
-            } else {
+            }
+            else {
               rating = 0;
             }
           }
@@ -214,20 +216,17 @@ app.get('/api/reviews', async (req, res) => {
         break;
       }
 
-      // Try navigating to the next page
-      const nextPageButton = await page.$(selectors.nextPageSelector);
-      if (nextPageButton) {
+      // Navigate to the next page
+      const nextPageButton = await driver.findElements(By.css(selectors.nextPageSelector));
+      if (nextPageButton.length > 0) {
         console.log('Loading next page...');
-        await nextPageButton.click();
-        // Add delay for loading
-        await delay(4000);
+        await nextPageButton[0].click();
+        await driver.sleep(3000);
       } else {
         console.log('No next page found, stopping.');
         break;
       }
     }
-
-    await browser.close();
 
     const filteredReviews = allReviews.slice(0, numReviews).filter((review) => review.title && review.body);
 
@@ -240,13 +239,17 @@ app.get('/api/reviews', async (req, res) => {
   } catch (error) {
     console.error('Exception occurred:', error);
     return res.status(500).json({ error: 'An error occurred while processing reviews.' });
+  } finally {
+    await driver.quit();
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get('/', (req, res) => {
+  res.send('Hello World!');
 });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT, () => {
   console.log('Server running on port 8000');
 });
+
+
