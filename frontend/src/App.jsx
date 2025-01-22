@@ -14,7 +14,7 @@ function App() {
     
     try {
       // Convert numReviews to a number before passing to the API
-      const response = await fetch(`https://go-marble-assignment-backend-723nazqb3-aaron-pintos-projects.vercel.app/api/reviews?url=${encodeURIComponent(url)}&numReviews=${Number(numReviews)}`);
+      const response = await fetch(`https://go-marble-assignment-backend.vercel.app/api/reviews?url=${encodeURIComponent(url)}&numReviews=${Number(numReviews)}`);
       const data = await response.json();
       
       if (!response.ok) {
