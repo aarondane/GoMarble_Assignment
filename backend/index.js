@@ -119,6 +119,9 @@ async function extractSelectors(reviewChunks) {
 
   return selectors;
 }
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
 app.get('/api/reviews', async (req, res) => {
   const { url, numReviews = 5 } = req.query;
