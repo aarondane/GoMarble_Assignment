@@ -1,15 +1,14 @@
 import express from 'express';
 import cors from 'cors';
-import { Builder, By, until } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome.js';
+import { PlaywrightCrawler } from 'crawlee'; // Import PlaywrightCrawler
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Initialize Google Gemini Generative AI
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-
 
 const app = express();
 app.use(cors());
@@ -42,7 +41,6 @@ function logReviewDetails(reviews) {
   console.log(`Total Reviews: ${reviews.length}\n`);
 }
 
-
 // Process HTML chunks to extract selectors
 async function extractSelectors(reviewChunks) {
   let selectors = {};
@@ -57,10 +55,10 @@ async function extractSelectors(reviewChunks) {
     console.log(`Processing chunk ${i + 1} of ${reviewChunks.length}`);
     const prompt = `
       Analyze this HTML chunk and identify CSS selectors for review elements. 
-      Return the CSS selectors only when you find multiple reviews with the same CSS selecors and you're sure of it.
+      Return the CSS selectors only when you find multiple reviews with the same CSS selectors and you're sure of it.
       Focus on the following:
       - container: The outer container of the review element.
-      - name: The selector for the reviewer name.
+      - name: The selector for the reviewer's name(inner-most).
       - rating: The selector for the rating element (do not select inner-most if not necessary).
       - review: The selector for the review text.
       - date: The selector for the review date (inner-most).
@@ -122,68 +120,65 @@ async function extractSelectors(reviewChunks) {
   return selectors;
 }
 
-
 app.get('/api/reviews', async (req, res) => {
   const { url, numReviews = 5 } = req.query;
+  console.log(numReviews); // Default to 5 reviews if numReviews is not provided
 
   if (!url) {
     return res.status(400).json({ error: 'URL parameter is required' });
   }
 
-  const options = new chrome.Options();
-  options.addArguments('--headless', '--disable-gpu', '--no-sandbox','--disable-dev-shm-usage','--disable-logging', '--mute-audio');
+  const collectedReviews = [];
+  let selectors = null; // Cache selectors after first extraction
 
-  const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
+  console.log(`Scraping reviews from ${url}, aiming for ${numReviews} reviews.`);
 
-  let allReviews = [];
-  let selectors = null;
-
-  try {
-    console.log(`Scraping reviews from ${url}, aiming for ${numReviews} reviews.`);
-
-    await driver.get(url);
-    await driver.wait(until.elementLocated(By.css('body')), 10000);
-
-    // Close popup if present
-    const closePopupSelector = '.store-selection-popup--close';
-    const popupCloseButton = await driver.findElements(By.css(closePopupSelector));
-    if (popupCloseButton.length > 0) {
-      console.log('Popup found, closing it...');
-      await popupCloseButton[0].click();
-      await driver.sleep(1000);
-    } else {
-      console.log('No popup found.');
-    }
-
-    while (allReviews.length < numReviews) {
-      const fullHtml = await driver.executeScript('return document.documentElement.outerHTML');
-
+  const crawler = new PlaywrightCrawler({
+    async requestHandler({ page, request, enqueueLinks, requestQueue }) {
+      console.log(`Processing: ${request.url}`);
+  
+      await page.goto(request.url);
+      await page.waitForSelector('body');
+  
+      // Check if the popup exists and close it
+      const closePopupSelector = '.store-selection-popup--close';
+      const popupCloseButton = await page.$(closePopupSelector);
+      if (popupCloseButton) {
+        console.log('Popup found, closing it...');
+        await popupCloseButton.click();
+        await page.waitForTimeout(1000); // Wait for the popup to close
+      } else {
+        console.log('No popup found.');
+      }
+  
+      const fullHtml = await page.content();
+  
       // Extract selectors if not already done
       if (!selectors) {
         const htmlChunks = chunkHtml(fullHtml);
-        const reviewChunks = filterChunksWithReviews(htmlChunks);        
+        const reviewChunks = filterChunksWithReviews(htmlChunks);
         reviewChunks.reverse(); // Process chunks from the end
-        selectors = await extractSelectors(reviewChunks); // Assume this is unchanged
-
-        if (!selectors.container) {
-          await driver.quit();
-          return res.status(404).json({ error: 'Review selectors not found.' });
+        selectors = await extractSelectors(reviewChunks);
+  
+        if (Object.keys(selectors).length === 0) {
+          console.warn('Review selectors not found.');
+          return;
         }
+  
         console.log('Extracted selectors:', selectors);
-        } 
-        else {
+      } else {
         console.log('Reusing cached selectors:', selectors);
       }
-
-      // Extract reviews using selectors
-      const reviews = await driver.executeScript((selectors) => {
+  
+      // Extract reviews from the current page
+      const reviews = await page.evaluate((selectors) => {
         const reviewElements = document.querySelectorAll(selectors.container);
         return Array.from(reviewElements).map((review) => {
           const nameElement = review.querySelector(selectors.name);
           const ratingElement = review.querySelector(selectors.rating);
           const reviewElement = review.querySelector(selectors.review);
           const dateElement = review.querySelector(selectors.date);
-
+  
           let rating = 0;
           if (ratingElement) {
             const ariaLabel = ratingElement.getAttribute('aria-label');
@@ -192,12 +187,11 @@ app.get('/api/reviews', async (req, res) => {
               if (match) {
                 rating = parseInt(match[1], 10);
               }
-            }
-            else {
+            } else {
               rating = 0;
             }
           }
-
+  
           return {
             title: nameElement?.textContent?.trim() || '',
             body: reviewElement?.textContent?.trim() || '',
@@ -207,28 +201,37 @@ app.get('/api/reviews', async (req, res) => {
           };
         });
       }, selectors);
-
-      allReviews = [...allReviews, ...reviews];
-
+  
+      collectedReviews.push(...reviews);
+  
       // Check if we have collected enough reviews
-      if (allReviews.length >= numReviews) {
+      if (collectedReviews.length >= numReviews) {
         console.log('Collected required number of reviews.');
-        break;
+        return;
       }
-
-      // Navigate to the next page
-      const nextPageButton = await driver.findElements(By.css(selectors.nextPageSelector));
-      if (nextPageButton.length > 0) {
-        console.log('Loading next page...');
-        await nextPageButton[0].click();
-        await driver.sleep(3000);
+  
+      // Check for the "Next Page" button and add the next page to the queue
+      const nextPageUrl = await page.evaluate((selectors) => {
+        const nextPageElement = document.querySelector(selectors.nextPageSelector);
+        return nextPageElement ? nextPageElement.href : null;
+      }, selectors);
+  
+      if (nextPageUrl) {
+        console.log(`Found next page: ${nextPageUrl}`);
+        await requestQueue.addRequest({ url: nextPageUrl });
       } else {
         console.log('No next page found, stopping.');
-        break;
       }
-    }
+    },
+    async failedRequestHandler({ request }) {
+      console.error(`Failed to process ${request.url}`);
+    },
+  });
+  
+  try {
+    await crawler.run([url]);
 
-    const filteredReviews = allReviews.slice(0, numReviews).filter((review) => review.title && review.body);
+    const filteredReviews = collectedReviews.slice(0, numReviews).filter((review) => review.title && review.body);
 
     logReviewDetails(filteredReviews);
 
@@ -239,8 +242,6 @@ app.get('/api/reviews', async (req, res) => {
   } catch (error) {
     console.error('Exception occurred:', error);
     return res.status(500).json({ error: 'An error occurred while processing reviews.' });
-  } finally {
-    await driver.quit();
   }
 });
 
@@ -248,8 +249,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(8000, () => {
   console.log('Server running on port 8000');
 });
-
-
