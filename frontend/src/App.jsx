@@ -14,7 +14,9 @@ function App() {
     
     try {
       // Convert numReviews to a number before passing to the API
+
       const response = await fetch(`http://18.212.94.61:8000/api/reviews?url=${encodeURIComponent(url)}&numReviews=${Number(numReviews)}`);
+
       const data = await response.json();
       
       if (!response.ok) {
