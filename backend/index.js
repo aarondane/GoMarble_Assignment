@@ -241,6 +241,9 @@ app.get('/api/reviews', async (req, res) => {
     return res.status(500).json({ error: 'An error occurred while processing reviews.' });
   }
 });
+app.get('/', (req, res) => {
+  res.send('Welcome to the Reviews API');
+});
 
 app.listen(process.env.PORT, () => {
   console.log('Server running on port 8000');
